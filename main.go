@@ -3,7 +3,6 @@ package main
 import (
 	"embed"
 	"flag"
-	"fmt"
 	"io/fs"
 	"log"
 	"net/http"
@@ -86,7 +85,6 @@ func (a *Auth) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Pragma", "no-cache")
 
 	// if s[len(s)-1] == "html" {
-	fmt.Println(r.URL.String())
 	// }
 
 	if token, err := r.Cookie("Token"); err == nil {

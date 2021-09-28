@@ -1,5 +1,5 @@
 var token;
-var name ;
+var username;
 // REQUEST API
 async function restlogin(body) {
   var myInit = {
@@ -17,9 +17,9 @@ async function restlogin(body) {
   console.log(data)
   if (response.status == "200") {
     token = response.headers.get("Token");
-    name = response.headers.get("Name");
+    username = response.headers.get("Name");
     document.cookie = ("Token=" + token + "; path=/");
-    document.cookie = ("Name=" + name + "; path=/");
+    document.cookie = ("Name=" + username + "; path=/");
     
     location.assign(`${window.location.protocol}//${window.location.host}/html/index2.html`)
   }

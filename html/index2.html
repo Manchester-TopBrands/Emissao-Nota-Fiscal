@@ -488,10 +488,26 @@
   <script src="js/Download/enotasDownload.js"></script>\
   <script src="js/Auth/sign-upAuth.js"></script>
   <script>
-    name = document.cookie.getItem("Name");
-    console.log(name,"ola")
+    function getCookie(name) {  
+      var dc = document.cookie;  
+      var prefix = name +"=";  
+      var begin = dc.indexOf("; " + prefix);  
+      if (begin == -1) {  
+          begin = dc.indexOf(prefix);  
+          if (begin != 0)return null;  
+      } else {  
+          begin += 2;  
+      }  
+      var end = document.cookie.indexOf(";", begin);  
+      if (end == -1) {  
+          end = dc.length;  
+      }  
+      return unescape(dc.substring(begin + prefix.length, end));  
+  }  
+    var name = getCookie("Name")
     var nome = document.getElementById("name");
-    nome.innerHTML = name
+    var prefix = name.split(".")
+    nome.innerHTML = prefix[0].charAt(0).toUpperCase() + prefix[0].slice(1) + " "+ prefix[1].charAt(0).toUpperCase() + prefix[1].slice(1);
   </script>
 </body>
 </html>
