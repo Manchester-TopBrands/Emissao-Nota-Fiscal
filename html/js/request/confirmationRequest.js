@@ -6,11 +6,32 @@ function headers() {
   h.set("Token", localStorage.getItem("Token"));
   return h;
 }
+function getCookie(name) {  
+  var dc = document.cookie;  
+  var prefix = name +"=";  
+  var begin = dc.indexOf("; " + prefix);  
+  if (begin == -1) {  
+      begin = dc.indexOf(prefix);  
+      if (begin != 0)return null;  
+  } else {  
+      begin += 2;  
+  }  
+  var end = document.cookie.indexOf(";", begin);  
+  if (end == -1) {  
+      end = dc.length;  
+  }  
+  return unescape(dc.substring(begin + prefix.length, end));  
+}  
+
 // envio de confirmaçao para emissão NFE
 function enviarnfe() {
+var name = getCookie("Name")
+var prefix = name.split(".")
+username = prefix[0].charAt(0).toUpperCase() + prefix[0].slice(1) + " "+ prefix[1].charAt(0).toUpperCase() + prefix[1].slice(1);
   data = {
     "id": id,
-    "producao": prod2, 
+    "producao": prod2,
+    "username": username, 
   } 
   restnfe(data);
 }

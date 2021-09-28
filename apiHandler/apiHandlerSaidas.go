@@ -12,6 +12,7 @@ import (
 
 type req struct {
 	ID       string `json:"id,omitempty"`
+	Username string `json:"username,omitempty"`
 	Producao bool   `json:"producao,omitempty"`
 }
 
@@ -29,8 +30,6 @@ func Saidas(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	fmt.Println(resp)
-
 	ambiente := "Homologacao"
 	if resp.Producao {
 		ambiente = "Producao"
@@ -114,7 +113,7 @@ func Saidas(w http.ResponseWriter, r *http.Request) {
 
 		}
 		var rsp *respEnotas
-		rsp, err = EmitirNFe(&enotasNF, resp.Producao)
+		rsp, err = EmitirNFe(&enotasNF, resp.Producao, resp.Username)
 
 		if err != nil {
 			nfResults[enotasNF.ID] = &models.RespLink{

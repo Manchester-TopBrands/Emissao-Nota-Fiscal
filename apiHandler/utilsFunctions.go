@@ -85,7 +85,7 @@ func responseExcel(nfs map[string]*models.Nf, stocks map[string]float64, idnfe s
 }
 
 // EmitirNFeProducao ...
-func EmitirNFe(nf *models.NfeStruct, prod bool) (*respEnotas, error) {
+func EmitirNFe(nf *models.NfeStruct, prod bool, username string) (*respEnotas, error) {
 	client := &http.Client{}
 	b := new(bytes.Buffer)
 	json.NewEncoder(b).Encode(nf)
@@ -125,12 +125,12 @@ func EmitirNFe(nf *models.NfeStruct, prod bool) (*respEnotas, error) {
 		return nil, err
 	}
 
-	err = DownloadFile(response.NfeLinkXML, prod)
+	err = DownloadFile(response.NfeLinkXML, prod, username)
 	return &response, err
 }
 
 // DownloadFileProducao ...
-func DownloadFile(url string, prod bool) error {
+func DownloadFile(url string, prod bool, username string) error {
 
 	// Get the data
 	resp, err := http.Get(url)
@@ -146,5 +146,5 @@ func DownloadFile(url string, prod bool) error {
 	b, _ := ioutil.ReadAll(resp.Body)
 	data := UnMarshal(b)
 
-	return sqlConn.AddSaidas(&data)
+	return sqlConn.AddSaidas(&data, username)
 }
