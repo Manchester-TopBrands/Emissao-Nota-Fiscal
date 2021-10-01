@@ -501,13 +501,14 @@
       var end = document.cookie.indexOf(";", begin);  
       if (end == -1) {  
           end = dc.length;  
-      }  
+      } 
       return unescape(dc.substring(begin + prefix.length, end));  
   }  
     var name = getCookie("Name")
     var nome = document.getElementById("name");
     var prefix = name.split(".")
     username = prefix[0].charAt(0).toUpperCase() + prefix[0].slice(1) + " "+ prefix[1].charAt(0).toUpperCase() + prefix[1].slice(1);
+    nome.innerHTML = username
   </script>
 </body>
 </html>

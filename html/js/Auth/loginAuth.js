@@ -20,7 +20,6 @@ async function restlogin(body) {
     username = response.headers.get("Name");
     document.cookie = ("Token=" + token + "; path=/");
     document.cookie = ("Name=" + username + "; path=/");
-    
     location.assign(`${window.location.protocol}//${window.location.host}/html/index2.html`)
   }
  
