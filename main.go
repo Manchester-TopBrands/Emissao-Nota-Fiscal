@@ -38,7 +38,6 @@ func main() {
 		log.Println(err)
 		return
 	}
-	apihandler.SetSQLConn(connection)
 	htmlFS, err := fs.Sub(content, "html")
 	if err != nil {
 		log.Println(err)
@@ -48,9 +47,9 @@ func main() {
 	log.Printf("starting server '%s' at port: %s", c.Config.API.Host, c.Config.API.Port)
 
 	http.Handle("/download", &Auth{apihandler.Download, true})
-	http.Handle("/addExcel", &Auth{apihandler.Excel, true})
-	http.Handle("/addEntradas", &Auth{apihandler.Entradas, true})
-	http.Handle("/addSaidas", &Auth{apihandler.Saidas, true})
+	http.Handle("/addExcel", &Auth{apihandler.Excel(connection), true})
+	http.Handle("/addEntradas", &Auth{apihandler.Entradas(connection), true})
+	http.Handle("/addSaidas", &Auth{apihandler.Saidas(connection), true})
 	//http.Handle("/addSaidas/homologacao", &Auth{apihandler.SaidasHomologacao})
 	http.HandleFunc("/addLogin", apihandler.Login)
 	http.Handle("/addLogout", &Auth{apihandler.Logout, true})

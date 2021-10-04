@@ -24,15 +24,8 @@ const (
 var tempNfs map[string]map[string]*models.Nf = map[string]map[string]*models.Nf{}
 var locker sync.Mutex
 
-var sqlConn *sql.SQLStr
-
 func init() {
 	rand.Seed(time.Now().UnixNano())
-}
-
-//SetSQLConn ...
-func SetSQLConn(c *sql.SQLStr) {
-	sqlConn = c
 }
 
 // genKey ...
@@ -85,66 +78,71 @@ func responseExcel(nfs map[string]*models.Nf, stocks map[string]float64, idnfe s
 }
 
 // EmitirNFeProducao ...
-func EmitirNFe(nf *models.NfeStruct, prod bool, username string) (*respEnotas, error) {
-	client := &http.Client{}
-	b := new(bytes.Buffer)
-	json.NewEncoder(b).Encode(nf)
-	req, _ := http.NewRequest(http.MethodPost, apiUrl+resource, b)
-	req.Header.Set("Authorization", apikey)
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/json")
-	resp, _ := client.Do(req)
-	fmt.Println("emitir nf:", resp.Status)
+func EmitirNFe(s *sql.SQLStr) func(nf *models.NfeStruct, prod bool, username string) (*respEnotas, error) {
+	return func(nf *models.NfeStruct, prod bool, username string) (*respEnotas, error) {
+		client := &http.Client{}
+		b := new(bytes.Buffer)
+		json.NewEncoder(b).Encode(nf)
+		req, _ := http.NewRequest(http.MethodPost, apiUrl+resource, b)
+		req.Header.Set("Authorization", apikey)
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Accept", "application/json")
+		resp, _ := client.Do(req)
+		fmt.Println("emitir nf:", resp.Status)
 
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("nota invalida: %s", resp.Status)
+		if resp.StatusCode != 200 {
+			return nil, fmt.Errorf("nota invalida: %s", resp.Status)
+		}
+
+		c := make(chan respEnotas)
+
+		enotarResponsesLocker.Lock()
+		enotasResponses[nf.ID] = c
+		enotarResponsesLocker.Unlock()
+
+		var response respEnotas
+		var err error
+
+		t := time.NewTimer(time.Second * 200)
+
+		select {
+		case response = <-c:
+		case <-t.C:
+			err = fmt.Errorf("timeout")
+		}
+
+		enotarResponsesLocker.Lock()
+		delete(enotasResponses, nf.ID)
+		enotarResponsesLocker.Unlock()
+
+		if err != nil {
+			return nil, err
+		}
+
+		funcDownload := DownloadFile(s)
+		err = funcDownload(response.NfeLinkXML, prod, username)
+		return &response, err
 	}
-
-	c := make(chan respEnotas)
-
-	enotarResponsesLocker.Lock()
-	enotasResponses[nf.ID] = c
-	enotarResponsesLocker.Unlock()
-
-	var response respEnotas
-	var err error
-
-	t := time.NewTimer(time.Second * 200)
-
-	select {
-	case response = <-c:
-	case <-t.C:
-		err = fmt.Errorf("timeout")
-	}
-
-	enotarResponsesLocker.Lock()
-	delete(enotasResponses, nf.ID)
-	enotarResponsesLocker.Unlock()
-
-	if err != nil {
-		return nil, err
-	}
-
-	err = DownloadFile(response.NfeLinkXML, prod, username)
-	return &response, err
 }
 
 // DownloadFileProducao ...
-func DownloadFile(url string, prod bool, username string) error {
+func DownloadFile(s *sql.SQLStr) func(url string, prod bool, username string) error {
+	return func(url string, prod bool, username string) error {
 
-	// Get the data
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
+		// Get the data
+		resp, err := http.Get(url)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+
+		if !prod {
+			return nil
+		}
+
+		b, _ := ioutil.ReadAll(resp.Body)
+		data := UnMarshal(b)
+
+		return s.AddSaidas(&data, username)
 	}
-	defer resp.Body.Close()
-
-	if !prod {
-		return nil
-	}
-
-	b, _ := ioutil.ReadAll(resp.Body)
-	data := UnMarshal(b)
-
-	return sqlConn.AddSaidas(&data, username)
 }
