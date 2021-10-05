@@ -5,13 +5,7 @@ function headers() {
   return h
 }
 function rest2(body) {
-    var myInit = {
-      method: "POST",
-      headers: headers(),
-      mode: "cors",
-      cache: "default",
-      body: body,
-    };
+    var myInit = criarInit(body,'POST')
     fetch(
       `${window.location.protocol}//${window.location.host}/addExcel`,
       myInit
@@ -21,7 +15,7 @@ function rest2(body) {
           b.text().then((data) => {
             let cliente = JSON.parse(data);
 
-            const trhead = document.getElementById("thead");
+            const trhead = getElement("thead");
             trhead.innerHTML = "";
             var a = [
               "#",
@@ -40,11 +34,11 @@ function rest2(body) {
               th.innerHTML = col;
               trhead.appendChild(th);
             });
-            const trbody = document.getElementById("tbody");
+            const trbody = getElement("tbody");
             trbody.innerHTML = "";
             var produtosNegativo = false;
-            var button = document.getElementById("buttonconfirmed");
-            var notbutton = document.getElementById("button!confirmed");
+            var button = getElement("buttonconfirmed");
+            var notbutton = getElement("button!confirmed");
             cliente.items.forEach((item, index) => {
               var tr = document.createElement("tr");
               tr.setAttribute("scope", "row");
@@ -85,7 +79,7 @@ function rest2(body) {
 
 // envio de pedidos
 function enviarExcel() {
-    var input = document.getElementById("file");
+    var input = getElement("file");
     console.log(input.files.length);
     if (input.files.length > 0) {
       let formData = new FormData();

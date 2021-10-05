@@ -510,5 +510,31 @@
     username = prefix[0].charAt(0).toUpperCase() + prefix[0].slice(1) + " "+ prefix[1].charAt(0).toUpperCase() + prefix[1].slice(1);
     nome.innerHTML = username
   </script>
+  <script>
+    function criarObjeto() {
+      let objeto = {};
+      return objeto
+    }
+    function getElement(value) {
+      return document.getElementById(value)
+    }
+    function criarInit(body,method) {
+      var myInit = criarObjeto();
+      if (body == null) {
+        myInit.method = method
+        myInit.headers = headers()
+        myInit.mode = 'cors'
+        myInit.cache = 'default'
+        return myInit
+      }
+        myInit.method = method
+        myInit.headers = headers()
+        myInit.mode = 'cors'
+        myInit.cache = 'default'
+        myInit.body = body
+        return myInit
+    }
+    
+  </script>
 </body>
 </html>

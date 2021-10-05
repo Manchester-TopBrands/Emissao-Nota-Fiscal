@@ -4,14 +4,10 @@ function headers() {
   h.set("Token", localStorage.getItem("Token"))
   return h
 }
+
 // resposta URL para Download automático 
 async function downloadFile(name, data) {
-    var myInit = {
-      method: "GET",
-      headers: headers(),
-      mode: "cors",
-      cache: "default",
-    };
+    var myInit = criarInit(null,'GET')
     var values = [[data.xml, "xml"], [data.pdf, "pdf"]]
     
     for (var i =0; i<values.length; i++) {
@@ -28,7 +24,7 @@ async function downloadFile(name, data) {
       var a = document.createElement("a");
           a.setAttribute("class", "badge badge-success");
           a.innerHTML = "Sucesso";
-      var td2 = document.getElementById(name+ values[i][1])
+      var td2 = getElement(name+ values[i][1])
       while (td2.firstChild) {
         td2.firstChild.remove();
       }

@@ -28,19 +28,18 @@ function enviarnfe() {
 var name = getCookie("Name")
 var prefix = name.split(".")
 username = prefix[0].charAt(0).toUpperCase() + prefix[0].slice(1) + " "+ prefix[1].charAt(0).toUpperCase() + prefix[1].slice(1);
-  data = {
-    "id": id,
-    "producao": prod2,
-    "username": username, 
-  } 
+let data = criarObjeto();
+data.id = id
+data.producao = prod2
+data.username = username 
   restnfe(data);
 }
 // Homologacao/Producao
 function setProd() {
-  var btnProd = document.getElementById("btnProd")
-  var btnHomo = document.getElementById("btnHomo")
-  var iconProd = document.getElementById("iconProd")
-  var iconHomo = document.getElementById("iconHomo")
+  var btnProd = getElement("btnProd")
+  var btnHomo = getElement("btnHomo")
+  var iconProd = getElement("iconProd")
+  var iconHomo = getElement("iconHomo")
   prod2 = true;
   btnProd.setAttribute("class" , "btn btn-success btn-icon-split")
   btnHomo.setAttribute("class" , "btn btn-secondary btn-icon-split")
@@ -48,10 +47,10 @@ function setProd() {
   iconHomo.setAttribute("class" , "fas fa-arrow-right") 
 }
 function setHomo() {
-  var btnProd = document.getElementById("btnProd")
-  var btnHomo = document.getElementById("btnHomo")
-  var iconHomo = document.getElementById("iconHomo")
-  var iconProd = document.getElementById("iconProd")
+  var btnProd = getElement("btnProd")
+  var btnHomo = getElement("btnHomo")
+  var iconHomo = getElement("iconHomo")
+  var iconProd = getElement("iconProd")
   prod2 = false
   btnProd.setAttribute("class" , "btn btn-secondary btn-icon-split")
   btnHomo.setAttribute("class" ,"btn btn-success btn-icon-split" )
@@ -61,25 +60,19 @@ function setHomo() {
 
 // requisição
 async function restnfe(body) {
-  var card = document.getElementById("buttonconfirmed");
-  var load = document.getElementById("loadStatus");
-  var nfeSucess = document.getElementById("nfeSucess");
-  var bttXml = document.getElementById("toastbtn");
-  var bttExcel = document.getElementById("buttonExcel");
-  var newPedido = document.getElementById("newPedido");
+  var card = getElement("buttonconfirmed");
+  var load = getElement("loadStatus");
+  var nfeSucess = getElement("nfeSucess");
+  var bttXml = getElement("toastbtn");
+  var bttExcel = getElement("buttonExcel");
+  var newPedido = getElement("newPedido");
 
   load.setAttribute("class", "text-center");
   card.setAttribute("class", "container my-auto d-none");
   bttXml.setAttribute("class", "btn btn-primary d-none");
   bttExcel.setAttribute("class", "btn btn-success d-none");
 
-  var myInit = {
-    method: "POST",
-    headers: headers(),
-    mode: "cors",
-    cache: "default",
-    body: JSON.stringify(body),
-  };
+  var myInit = criarInit(JSON.stringify(body),'POST')
   const response = await fetch(
     `${window.location.protocol}//${window.location.host}/addSaidas`,
     myInit
@@ -92,7 +85,7 @@ async function restnfe(body) {
 
     const data = await (await response.blob()).text();
     //console.log(data)
-    const trhead2 = document.getElementById("theadNFE");
+    const trhead2 = getElement("theadNFE");
     var cabecalho = ["#", "ID", "DOWLOADING...."];
     cabecalho.forEach((col) => {
       var th = document.createElement("th");
@@ -101,7 +94,7 @@ async function restnfe(body) {
       th.innerHTML = col;
       trhead2.appendChild(th);
     });
-    const trbody = document.getElementById("tbodyNFE");
+    const trbody = getElement("tbodyNFE");
     var i = 1;
     for (var id in data.data) {
       ["xml", "pdf"].forEach((type) => {
@@ -137,17 +130,6 @@ async function restnfe(body) {
         trbody.appendChild(tr);
       })
     }
-
-    // for (const i in data.data) {
-    //   if (data.data[i].status == "Autorizada") {
-    //     var loading = document.getElementById("loadbtn");
-    //     loading.setAttribute("class", "");
-    //   } else {
-    //     var btnfalse = document.getElementById("btnnegado");
-    //     btnfalse = document.getElementById("class", "");
-    //   }
-    // }
-
     for (const i in data.data) {
       console.log(data.data[i]);
       if (data.data[i].status == "Autorizada") {

@@ -32,7 +32,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	status, _, _, err := auth.AuthenticateExtended(config, client.Username, client.Userpassword, nil, []string{"Manchester", "VPN", "Paralegal"})
+	status, _, _, err := auth.AuthenticateExtended(config, client.Username, client.Userpassword, nil, []string{"Manchester"})
 	if err != nil {
 		log.Fatal(err)
 	}

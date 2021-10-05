@@ -5,12 +5,7 @@ function headers() {
   return h
 }
 async function downloadStructFile() {
-    var myInit = {
-      method: "GET",
-      headers: headers(),
-      mode: "cors",
-      cache: "default",
-    };
+    var myInit = criarInit(null,'GET')
       const response = await fetch( `${window.location.protocol}//${window.location.host}/download`, myInit);
       var myBlob = await response.blob();
       var a = document.createElement("a");
