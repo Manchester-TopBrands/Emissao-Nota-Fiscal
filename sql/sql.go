@@ -13,9 +13,9 @@ import (
 )
 
 const (
-	productFmt string = "INSERT INTO Manchester_Group..NFE_%s_PRODUTOS (ID_NFE_%s,ID_PRODUTO,CODIGO_PRODUTO,CEAN,DESC_PROD,NCM,CFOP,UCOM,QCOM,VUNCOM,VPROD,CEANT_TRIB,UTRIB,QTRIB,VUN_TRIB,IND_TOT,ICMS00_ORIG,ICMS00_CST,ICMS00_MODBC,ICMS00_VBC,ICMS00_PICMS,ICMS00_VICMS,IPI_CENQ,IPI_TRIB_CST,IPI_TRIB_VBC,IPI_TRIB_PIPI,IPI_TRIB_VIPI,PIS_CST,PIS_VBC,PIS_PPIS,PIS_VPIS,COFINS_CST,COFINS_VBC,COFINS_PCOFINS,COFINS_VCOFINS) VALUES('%s','%d','%d','%s','%s','%s','%s','%s','%f','%f','%f','%s','%s','%f','%f','%s','%s','%s','%s','%f','%f','%f','%s','%s','%f','%f','%f','%s','%f','%f','%f','%s','%f','%f','%f')"
-	nfFmt      string = "INSERT INTO Manchester_Group..NFE_%s (ID_NFE_%s,NUM_SERIE_NFE,CNPJ_NFE,CLIFOR,NUM_NOTA,DATA_EMISSAO,QTD_ITEMS) VALUES('%s','%s','%s','%s','%s','%s','%d')"
-	// saidaFmt   string = "INSERT INTO Manchester_Group..NFE_SAIDAS (ID_NFE_SAIDAS,NUM_SERIE_NFE,CNPJ_NFE,NOME_CLIENTE,NUM_NOTA,DATA_EMISSAO,QTD_ITEMS) VALUES('%s','%s','%s','%s','%s','%s','%d')"
+	productFmt string = "INSERT INTO LINX_TBFG..NFE_%s_PRODUTOS (ID_NFE_%s,ID_PRODUTO,CODIGO_PRODUTO,CEAN,DESC_PROD,NCM,CFOP,UCOM,QCOM,VUNCOM,VPROD,CEANT_TRIB,UTRIB,QTRIB,VUN_TRIB,IND_TOT,ICMS00_ORIG,ICMS00_CST,ICMS00_MODBC,ICMS00_VBC,ICMS00_PICMS,ICMS00_VICMS,IPI_CENQ,IPI_TRIB_CST,IPI_TRIB_VBC,IPI_TRIB_PIPI,IPI_TRIB_VIPI,PIS_CST,PIS_VBC,PIS_PPIS,PIS_VPIS,COFINS_CST,COFINS_VBC,COFINS_PCOFINS,COFINS_VCOFINS) VALUES('%s','%d','%d','%s','%s','%s','%s','%s','%f','%f','%f','%s','%s','%f','%f','%s','%s','%s','%s','%f','%f','%f','%s','%s','%f','%f','%f','%s','%f','%f','%f','%s','%f','%f','%f')"
+	nfFmt      string = "INSERT INTO LINX_TBFG..NFE_%s (ID_NFE_%s,NUM_SERIE_NFE,CNPJ_NFE,CLIFOR,NUM_NOTA,DATA_EMISSAO,QTD_ITEMS) VALUES('%s','%s','%s','%s','%s','%s','%d')"
+	// saidaFmt   string = "INSERT INTO LINX_TBFG..NFE_SAIDAS (ID_NFE_SAIDAS,NUM_SERIE_NFE,CNPJ_NFE,NOME_CLIENTE,NUM_NOTA,DATA_EMISSAO,QTD_ITEMS) VALUES('%s','%s','%s','%s','%s','%s','%d')"
 )
 
 // SQLStr ...
@@ -118,8 +118,8 @@ func (s *SQLStr) GetStock(codes []string) (map[string]*models.ProductInfo, error
 		}
 	}
 
-	rows, err := s.db.QueryContext(context.Background(), fmt.Sprintf(`SELECT A.CODIGO_PRODUTO, A.QUANTIDADE_ESTOQUE , B.CFOP,B.DESC_PROD,B.NCM,B.UCOM FROM Manchester_Group..ESTOQUE_PRODUTO A
-	LEFT JOIN Manchester_Group..NFE_ENTRADAS_PRODUTOS B ON A.CODIGO_PRODUTO = B.CODIGO_PRODUTO
+	rows, err := s.db.QueryContext(context.Background(), fmt.Sprintf(`SELECT A.CODIGO_PRODUTO, A.QUANTIDADE_ESTOQUE , B.CFOP,B.DESC_PROD,B.NCM,B.UCOM FROM LINX_TBFG..ESTOQUE_PRODUTO A
+	LEFT JOIN LINX_TBFG..NFE_ENTRADAS_PRODUTOS B ON A.CODIGO_PRODUTO = B.CODIGO_PRODUTO
 	WHERE A.CODIGO_PRODUTO IN ('%s')`, strings.Join(codes, "', '")))
 	if err != nil {
 		return nil, err
@@ -143,7 +143,7 @@ func (s *SQLStr) GetClient(Username string) *models.Login {
 			return nil
 		}
 	}
-	row := s.db.QueryRowContext(context.Background(), fmt.Sprintf(`SELECT USER_NAME , USER_PASSWORD FROM Manchester_Group..USER_CADASTRO 
+	row := s.db.QueryRowContext(context.Background(), fmt.Sprintf(`SELECT USER_NAME , USER_PASSWORD FROM LINX_TBFG..USER_CADASTRO 
 	WHERE USER_NAME = '%s'`, Username))
 
 	var rsp models.Login

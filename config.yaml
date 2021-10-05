@@ -5,7 +5,7 @@ sql:
   host: localhost
   port: 1433
   user: sa
-  password: <Luccasantos10@>
+  password: Luccasantos10@
 auth: 
   server: "10.40.192.31"
   port: 389
