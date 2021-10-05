@@ -12,20 +12,20 @@ import (
 //Config ...
 var Config struct {
 	API struct {
-		Host string `yaml:"host,omitempty"`
-		Port string `yaml:"port,omitempty"`
-	} `yaml:"api,omitempty"`
+		Host string `yaml:"host"`
+		Port string `yaml:"port"`
+	} `yaml:"api"`
 	SQL struct {
-		Host     string `yaml:"host,omitempty"`
-		Port     string `yaml:"port,omitempty"`
-		User     string `yaml:"user,omitempty"`
-		Password string `yaml:"password,omitempty"`
-	} `yaml:"sql,omitempty"`
+		Host     string `yaml:"host"`
+		Port     string `yaml:"port"`
+		User     string `yaml:"user"`
+		Password string `yaml:"password"`
+	} `yaml:"sql"`
 	AUTH struct {
-		Server string `yaml:"server,omitempty"`
-		Port   int    `yaml:"port,omitempty"`
-		BaseDN string `yaml:"basedn,omitempty"`
-	} `yaml:"auth,omitempty"`
+		Server string `yaml:"server"`
+		Port   int    `yaml:"port"`
+		BaseDN string `yaml:"basedn"`
+	} `yaml:"auth"`
 }
 
 //LoadConfig ...
