@@ -23,7 +23,7 @@ var Config struct {
 	} `yaml:"sql"`
 	AUTH struct {
 		Server string `yaml:"server"`
-		Port   int    `yaml:"port"`
+		Port   string `yaml:"port"`
 		BaseDN string `yaml:"basedn"`
 	} `yaml:"auth"`
 }
