@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"net/url"
 	"strings"
 	"xmlconvert/models"
@@ -136,26 +135,6 @@ func (s *SQLStr) GetStock(codes []string) (map[string]*models.ProductInfo, error
 	return rst, nil
 }
 
-// GetClient ...
-func (s *SQLStr) GetClient(Username string) *models.Login {
-	if s.db.Ping() != nil {
-		if err := s.connect(); err != nil {
-			return nil
-		}
-	}
-	row := s.db.QueryRowContext(context.Background(), fmt.Sprintf(`SELECT USER_NAME , USER_PASSWORD FROM LINX_TBFG..USER_CADASTRO 
-	WHERE USER_NAME = '%s'`, Username))
-
-	var rsp models.Login
-
-	if err := row.Scan(&rsp.Username, &rsp.Userpassword); err != nil {
-		log.Println(err)
-		return nil
-	}
-	//return rst, nil
-	return &rsp
-}
-
 // MakeSQL ...
 func MakeSQL(host, port, username, password string) (*SQLStr, error) {
 
@@ -175,8 +154,4 @@ func (s *SQLStr) connect() error {
 		return err
 	}
 	return s.db.PingContext(context.Background())
-}
-
-func (s *SQLStr) disconnect() error {
-	return s.db.Close()
 }
