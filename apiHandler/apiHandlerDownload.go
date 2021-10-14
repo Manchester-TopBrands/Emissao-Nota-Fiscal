@@ -9,7 +9,7 @@ import (
 var ExcelPedido []byte
 
 // Download ...
-func Download(w http.ResponseWriter, r *http.Request) {
+func Download(w http.ResponseWriter, r *http.Request, user string) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "*")
 	w.Header().Set("access-control-expose-headers", "*")

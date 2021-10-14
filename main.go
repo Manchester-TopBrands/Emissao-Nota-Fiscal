@@ -6,9 +6,8 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
-	"strings"
-	"time"
 	apihandler "xmlconvert/apiHandler"
+	"xmlconvert/auth"
 	c "xmlconvert/config"
 	"xmlconvert/sql"
 )
@@ -18,8 +17,7 @@ var content embed.FS
 
 var createConfig bool
 
-func main() {
-
+func init() {
 	flag.BoolVar(&createConfig, "c", false, "create config.yaml file")
 	flag.Parse()
 
@@ -32,6 +30,9 @@ func main() {
 	if err := c.LoadConfig(); err != nil {
 		log.Fatal(err)
 	}
+}
+func main() {
+
 	log.Print("connecting sql ...")
 	connection, err := sql.MakeSQL(c.Config.SQL.Host, c.Config.SQL.Port, c.Config.SQL.User, c.Config.SQL.Password)
 	if err != nil {
@@ -46,17 +47,19 @@ func main() {
 
 	log.Printf("starting server '%s' at port: %s", c.Config.API.Host, c.Config.API.Port)
 
-	http.Handle("/download", &Auth{apihandler.Download, true})
-	http.Handle("/addExcel", &Auth{apihandler.Excel(connection), true})
-	http.Handle("/addEntradas", &Auth{apihandler.Entradas(connection), true})
-	http.Handle("/addSaidas", &Auth{apihandler.Saidas(connection), true})
-	//http.Handle("/addSaidas/homologacao", &Auth{apihandler.SaidasHomologacao})
-	http.HandleFunc("/addLogin", apihandler.Login)
+	Auth := auth.New(nil)
+
+	http.Handle("/download", Auth.Layer(apihandler.Download, "/html/login.html", true))
+	http.Handle("/addExcel", Auth.Layer(apihandler.Excel(connection), "/html/login.html", true))
+	http.Handle("/addEntradas", Auth.Layer(apihandler.Entradas(connection), "/html/login.html", true))
+	http.Handle("/addSaidas", Auth.Layer(apihandler.Saidas(connection), "/html/login.html", true))
+	//http.Handle("/addSaidas/homologacao", Auth.Layer(apihandler.SaidasHomologacao})
+	http.HandleFunc("/addLogin", apihandler.Login(Auth))
 	http.HandleFunc("/", redirect)
-	http.Handle("/addLogout", &Auth{apihandler.Logout, true})
+	// http.Handle("/addLogout", Auth.Layer(apihandler.Logout, true})
 	// fs := http.FileServer(http.Dir("html"))
 	fs := http.FileServer(http.FS(htmlFS))
-	http.Handle("/html/", http.StripPrefix("/html/", &Auth{fs.ServeHTTP, false}))
+	http.Handle("/html/", http.StripPrefix("/html/", Auth.Layer(func(w http.ResponseWriter, r *http.Request, u string) { fs.ServeHTTP(w, r) }, "/login.html", false)))
 	http.HandleFunc("/enotasNF", apihandler.Enotas)
 	log.Fatal(http.ListenAndServe(":8083", nil))
 }
@@ -72,31 +75,4 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, target,
 		// see comments below and consider the codes 308, 302, or 301
 		http.StatusTemporaryRedirect)
-}
-
-type Auth struct {
-	handler http.HandlerFunc
-	all     bool
-}
-
-func (a *Auth) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
-	w.Header().Set("Pragma", "no-cache")
-
-	if token, err := r.Cookie("Token"); err == nil {
-		if _, ok := apihandler.Tokens[token.Value]; ok {
-			if token.Expires.Before(time.Now()) {
-				a.handler(w, r)
-				return
-			}
-		}
-	}
-
-	urlS := strings.Split(r.URL.String(), ".")
-	if a.all || (urlS[len(urlS)-1] == "html" && r.URL.String() != "login.html") {
-		redirect(w, r)
-		return
-	}
-	a.handler(w, r)
 }

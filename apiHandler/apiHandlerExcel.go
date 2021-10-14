@@ -13,8 +13,8 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize"
 )
 
-func Excel(s *sql.SQLStr) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+func Excel(s *sql.SQLStr) func(w http.ResponseWriter, r *http.Request, user string) {
+	return func(w http.ResponseWriter, r *http.Request, user string) {
 		file, header, err := r.FormFile("file")
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)

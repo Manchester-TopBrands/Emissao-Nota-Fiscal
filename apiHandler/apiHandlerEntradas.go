@@ -13,8 +13,8 @@ import (
 )
 
 // Entradas ...
-func Entradas(s *sql.SQLStr) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+func Entradas(s *sql.SQLStr) func(w http.ResponseWriter, r *http.Request, username string) {
+	return func(w http.ResponseWriter, r *http.Request, username string) {
 		file, header, err := r.FormFile("file")
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -25,10 +25,10 @@ func Entradas(s *sql.SQLStr) func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-
+		fmt.Println(username)
 		data := UnMarshal(object)
 
-		if err = s.AddEntradas(&data); err != nil {
+		if err = s.AddEntradas(&data, username); err != nil {
 			log.Print(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			if err := json.NewEncoder(w).Encode(models.Response{

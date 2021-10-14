@@ -16,6 +16,7 @@ async function restlogin(body) {
     document.cookie = ("Name=" + username + "; path=/");
     location.assign(`${window.location.protocol}//${window.location.host}/html/index2.html`)
   }
+  alert(data.error)
  
 }
 

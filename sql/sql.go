@@ -23,43 +23,43 @@ type SQLStr struct {
 	db  *sql.DB
 }
 
-// addNFF ...
-func (s *SQLStr) addNFF(nfentrada *models.XmlFormat, kind string) error {
-	if s.db.Ping() != nil {
-		if err := s.connect(); err != nil {
-			return err
-		}
-	}
+// // addNFF ...
+// func (s *SQLStr) addNFF(nfentrada *models.XmlFormat, kind string) error {
+// 	if s.db.Ping() != nil {
+// 		if err := s.connect(); err != nil {
+// 			return err
+// 		}
+// 	}
 
-	tx, err := s.db.Begin()
-	if err != nil {
-		return err
-	}
+// 	tx, err := s.db.Begin()
+// 	if err != nil {
+// 		return err
+// 	}
 
-	query := fmt.Sprintf(nfFmt, kind, kind, nfentrada.NFe.InfNFe.ID, nfentrada.NFe.InfNFe.Ide.Serie, nfentrada.NFe.InfNFe.Emit.Cnpj, nfentrada.NFe.InfNFe.Emit.Xnome, nfentrada.NFe.InfNFe.Ide.Nnf, nfentrada.NFe.InfNFe.Ide.Dhsaient.Format("02-01-06 15:04:05"), len(nfentrada.NFe.InfNFe.Det))
+// 	query := fmt.Sprintf(nfFmt, kind, kind, nfentrada.NFe.InfNFe.ID, nfentrada.NFe.InfNFe.Ide.Serie, nfentrada.NFe.InfNFe.Emit.Cnpj, nfentrada.NFe.InfNFe.Emit.Xnome, nfentrada.NFe.InfNFe.Ide.Nnf, nfentrada.NFe.InfNFe.Ide.Dhsaient.Format("02-01-06 15:04:05"), len(nfentrada.NFe.InfNFe.Det))
 
-	if _, err := tx.ExecContext(context.Background(), query); err != nil {
-		tx.Rollback()
-		return err
-	}
-	//fmt.Println(query)
+// 	if _, err := tx.ExecContext(context.Background(), query); err != nil {
+// 		tx.Rollback()
+// 		return err
+// 	}
+// 	//fmt.Println(query)
 
-	for _, det := range nfentrada.NFe.InfNFe.Det {
-		if len(det.Prod.DescProduto) > 100 {
-			det.Prod.DescProduto = det.Prod.DescProduto[:100]
-		}
-		query2 := fmt.Sprintf(productFmt, kind, kind, nfentrada.NFe.InfNFe.ID, det.IDProd, det.Prod.Cprod, det.Prod.CEAN, det.Prod.DescProduto, det.Prod.NCM, det.Prod.Cfop, det.Prod.Ucom, det.Prod.Quantidade, det.Prod.ValorUni, det.Prod.Vprod, det.Prod.CEantrib,
-			det.Prod.Utrib, det.Prod.Qtrib, det.Prod.Vuntrib, det.Prod.Indtot, det.Imposto.Icms.Icms00.Orig, det.Imposto.Icms.Icms00.Cst, det.Imposto.Icms.Icms00.Modbc, det.Imposto.Icms.Icms00.Vbc, det.Imposto.Icms.Icms00.Picms, det.Imposto.Icms.Icms00.Vicms,
-			det.Imposto.Ipi.Cenq, det.Imposto.Ipi.Ipitrib.Cst, det.Imposto.Ipi.Ipitrib.Vbc, det.Imposto.Ipi.Ipitrib.Pipi, det.Imposto.Ipi.Ipitrib.Vipi, det.Imposto.Pis.PisOutr.Cst, det.Imposto.Pis.PisOutr.Vbc, det.Imposto.Pis.PisOutr.Ppis, det.Imposto.Pis.PisOutr.Vpis, det.Imposto.Cofins.CofinsOutr.Cst, det.Imposto.Cofins.CofinsOutr.Vbc, det.Imposto.Cofins.CofinsOutr.Pconfins, det.Imposto.Cofins.CofinsOutr.Vconfins)
-		_, err := tx.ExecContext(context.Background(), query2)
-		if err != nil {
-			tx.Rollback()
-			return err
-		}
-	}
+// 	for _, det := range nfentrada.NFe.InfNFe.Det {
+// 		if len(det.Prod.DescProduto) > 100 {
+// 			det.Prod.DescProduto = det.Prod.DescProduto[:100]
+// 		}
+// 		query2 := fmt.Sprintf(productFmt, kind, kind, nfentrada.NFe.InfNFe.ID, det.IDProd, det.Prod.Cprod, det.Prod.CEAN, det.Prod.DescProduto, det.Prod.NCM, det.Prod.Cfop, det.Prod.Ucom, det.Prod.Quantidade, det.Prod.ValorUni, det.Prod.Vprod, det.Prod.CEantrib,
+// 			det.Prod.Utrib, det.Prod.Qtrib, det.Prod.Vuntrib, det.Prod.Indtot, det.Imposto.Icms.Icms00.Orig, det.Imposto.Icms.Icms00.Cst, det.Imposto.Icms.Icms00.Modbc, det.Imposto.Icms.Icms00.Vbc, det.Imposto.Icms.Icms00.Picms, det.Imposto.Icms.Icms00.Vicms,
+// 			det.Imposto.Ipi.Cenq, det.Imposto.Ipi.Ipitrib.Cst, det.Imposto.Ipi.Ipitrib.Vbc, det.Imposto.Ipi.Ipitrib.Pipi, det.Imposto.Ipi.Ipitrib.Vipi, det.Imposto.Pis.PisOutr.Cst, det.Imposto.Pis.PisOutr.Vbc, det.Imposto.Pis.PisOutr.Ppis, det.Imposto.Pis.PisOutr.Vpis, det.Imposto.Cofins.CofinsOutr.Cst, det.Imposto.Cofins.CofinsOutr.Vbc, det.Imposto.Cofins.CofinsOutr.Pconfins, det.Imposto.Cofins.CofinsOutr.Vconfins)
+// 		_, err := tx.ExecContext(context.Background(), query2)
+// 		if err != nil {
+// 			tx.Rollback()
+// 			return err
+// 		}
+// 	}
 
-	return tx.Commit()
-}
+// 	return tx.Commit()
+// }
 
 // addNF ...
 func (s *SQLStr) addNF(nfentrada *models.XmlFormat, kind string, username string) error {
@@ -100,8 +100,8 @@ func (s *SQLStr) addNF(nfentrada *models.XmlFormat, kind string, username string
 }
 
 // AddEntradas ...
-func (s *SQLStr) AddEntradas(nfentrada *models.XmlFormat) error {
-	return s.addNFF(nfentrada, "ENTRADAS")
+func (s *SQLStr) AddEntradas(nfentrada *models.XmlFormat, username string) error {
+	return s.addNF(nfentrada, "ENTRADAS", username)
 }
 
 // addSaidas ...

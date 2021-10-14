@@ -17,8 +17,8 @@ type req struct {
 	Producao bool   `json:"producao,omitempty"`
 }
 
-func Saidas(s *sql.SQLStr) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+func Saidas(s *sql.SQLStr) func(w http.ResponseWriter, r *http.Request, username string) {
+	return func(w http.ResponseWriter, r *http.Request, username string) {
 		var err error
 
 		var resp req
